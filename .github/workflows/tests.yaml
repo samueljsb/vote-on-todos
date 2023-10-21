@@ -1,0 +1,33 @@
+name: tests
+
+on:
+  push:
+
+env:
+  PYTHON_VERSION: '3.12'
+
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - uses: actions/setup-python@v4
+      with:
+        python-version: ${{ env.PYTHON_VERSION }}
+        cache: 'pip'
+        cache-dependency-path: requirements/test.txt
+    - run: pip install nox
+    - run: nox -s tests
+
+  pip_compile:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - uses: actions/setup-python@v4
+      with:
+        python-version: ${{ env.PYTHON_VERSION }}
+        cache: 'pip'
+        cache-dependency-path: requirements/dev.txt
+    - run: pip install nox
+    - run: nox -s pip_compile
+    - run: git diff --exit-code
