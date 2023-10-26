@@ -4,5 +4,11 @@
 #
 #    nox -s pip_compile
 #
+asgiref==3.7.2
+    # via django
 attrs==23.1.0
     # via -r requirements/prod.in
+django==4.2.6
+    # via -r requirements/prod.in
+sqlparse==0.4.4
+    # via django
