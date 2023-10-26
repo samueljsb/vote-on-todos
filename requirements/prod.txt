@@ -4,3 +4,5 @@
 #
 #    nox -s pip_compile
 #
+attrs==23.1.0
+    # via -r requirements/prod.in

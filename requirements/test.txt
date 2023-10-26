@@ -4,6 +4,8 @@
 #
 #    nox -s pip_compile
 #
+attrs==23.1.0
+    # via -r requirements/prod.txt
 covdefaults==2.3.0
     # via -r requirements/test.in
 coverage==7.3.2
