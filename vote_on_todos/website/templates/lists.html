@@ -1,5 +1,9 @@
 {% extends '_base.html' %}
 
+{% block breadcrumbs %}
+  <li class="breadcrumb-item active" aria-current="page">Todo lists</li>
+{% endblock breadcrumbs %}
+
 {% block content %}
 <h1>Todo lists</h1>
 
@@ -16,7 +20,8 @@
   <tbody id="listsTable">
     {% for list in todo_lists %}
     <tr>
-      <td>{{ list.name }}</td><td>{{ list.description }}</td>
+      <td><a href="{% url 'list' list_id=list.id %}">{{ list.name }}</a></td>
+      <td>{{ list.description|linebreaks }}</td>
     </tr>
     {% empty %}
     <tr><td colspan="2">no lists: you should create one!</td></tr>

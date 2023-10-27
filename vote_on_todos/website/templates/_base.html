@@ -15,6 +15,12 @@
           {{ message }}
         </div>
       {% endfor %}
+      <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+          {% block breadcrumbs %}{% endblock breadcrumbs %}
+        </ol>
+      </nav>
+
       {% block content %}{% endblock content %}
     </div>
   </body>

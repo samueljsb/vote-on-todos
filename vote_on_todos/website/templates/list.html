@@ -1,5 +1,10 @@
 {% extends '_base.html' %}
 
+{% block breadcrumbs %}
+  <li class="breadcrumb-item"><a href="{% url 'lists' %}">Todo lists</a></li>
+  <li class="breadcrumb-item active" aria-current="page">{{ list.name }}</li>
+{% endblock breadcrumbs %}
+
 {% block content %}
 <h1>{{ list.name }}</h1>
 
