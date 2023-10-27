@@ -1,0 +1,50 @@
+{% extends '_base.html' %}
+
+{% block breadcrumbs %}
+  <li class="breadcrumb-item active" aria-current="page">Todo lists</li>
+{% endblock breadcrumbs %}
+
+{% block content %}
+<div class="card">
+  <div class="card-body">
+    <h1 class="card-title">Login</h1>
+    {% for error in form.non_field_errors %}
+      <div class="alert alert-danger" role="alert">
+        {{ error }}
+      </div>
+    {% endfor %}
+    <form method="post" class="mb-3">
+      {% csrf_token %}
+      <div class="mb-3">
+        <label for="username" class="form-label">Username</label>
+        <input id="username"
+          name="username" type="text"
+          class="form-control {% if form.username.errors %}is-invalid{% endif %}"
+          value="{{ form.data.username|default:'' }}"
+        >
+        {% for error in form.username.errors %}
+          <div class="invalid-feedback">
+            {{ error }}
+          </div>
+        {% endfor %}
+      </div>
+      <div class="mb-3">
+        <label for="password" class="form-label">Password</label>
+        <input id="password"
+        name="password" type="password"
+        class="form-control {% if form.password.errors %}is-invalid{% endif %}"
+        >
+        {% for error in form.password.errors %}
+          <div class="invalid-feedback">
+            {{ error }}
+          </div>
+        {% endfor %}
+      </div>
+      <button type="submit" class="btn btn-primary">Log in</button>
+      <input type="hidden" name="next" value="{{ next }}">
+    </form>
+
+    <p>Lost your password? You'll have to talk to an admin to get it reset.</p>
+  </div>
+</div>
+{% endblock content %}

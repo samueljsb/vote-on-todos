@@ -71,7 +71,9 @@ DATABASES = {
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 
-# Password validation
+# Auth
+
+LOGIN_REDIRECT_URL = 'lists'
 
 AUTH_PASSWORD_VALIDATORS = [
     {

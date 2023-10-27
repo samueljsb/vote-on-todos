@@ -15,16 +15,28 @@
   </head>
   <body>
     <div class="container">
+      <nav class="navbar bg-dark border-bottom border-body" data-bs-theme="dark">
+        <div class="container-fluid">
+          <nav aria-label="breadcrumb">
+            <ol class="breadcrumb mb-0">
+              {% block breadcrumbs %}{% endblock breadcrumbs %}
+            </ol>
+          </nav>
+          {% if request.user.is_authenticated %}
+          <span class="navbar-text">
+            logged in as {{ request.user }}
+          </span>
+          {% endif %}
+        </div>
+      </nav>
+
       {% for message in messages %}
         <div class="alert alert-{{ message.level_tag }}" role="alert">
           {{ message }}
         </div>
       {% endfor %}
-      <nav aria-label="breadcrumb">
-        <ol class="breadcrumb">
-          {% block breadcrumbs %}{% endblock breadcrumbs %}
-        </ol>
-      </nav>
+
+
 
       {% block content %}{% endblock content %}
     </div>
