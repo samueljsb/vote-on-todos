@@ -5,6 +5,9 @@ import nox
 nox.options.sessions = ['pip_compile', 'makemigrations', 'test']
 
 
+_LOCAL_SETTINGS_MODULE = 'vote_on_todos.website.settings.local'
+
+
 @nox.session(python='3.12', reuse_venv=True)
 def test(session: nox.Session) -> None:
     """Run tests."""
@@ -38,12 +41,22 @@ def pip_compile(session: nox.Session) -> None:
 def makemigrations(session: nox.Session) -> None:
     """Make Django migrations."""
     session.install('-r', 'requirements/prod.txt')
-    session.run('python', '-m', 'manage', 'makemigrations')
+    session.run(
+        'python', '-m', 'manage', 'makemigrations',
+        env={'DJANGO_SETTINGS_MODULE': _LOCAL_SETTINGS_MODULE},
+    )
 
 
 @nox.session(python='3.12', reuse_venv=True)
 def runserver(session: nox.Session) -> None:
     """Run the Django server."""
     session.install('-r', 'requirements/prod.txt')
-    session.run('python', '-m', 'manage', 'migrate')
-    session.run('python', '-m', 'manage', 'runserver')
+
+    session.run(
+        'python', '-m', 'manage', 'migrate',
+        env={'DJANGO_SETTINGS_MODULE': _LOCAL_SETTINGS_MODULE},
+    )
+    session.run(
+        'python', '-m', 'manage', 'runserver', *session.posargs,
+        env={'DJANGO_SETTINGS_MODULE': _LOCAL_SETTINGS_MODULE},
+    )

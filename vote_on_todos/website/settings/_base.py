@@ -1,24 +1,12 @@
 from __future__ import annotations
 
+import os
 from pathlib import Path
 
 from django.contrib.messages import constants as message_constants
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
-BASE_DIR = Path(__file__).resolve().parent.parent.parent
-
-# Note [Settings unsuitable for production]
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-# These settings are not yet suitable for deployment in production.
-
-SECRET_KEY = 'django-insecure-n!+c@68u9*7w$bwl6td%stg4vu7t#bbu#j4mqh%(n6b)50&)'
-# See Note [Settings unsuitable for production]
-
-
-DEBUG = True  # See Note [Settings unsuitable for production]
-
-ALLOWED_HOSTS: list[str] = []  # See Note [Settings unsuitable for production]
-
+BASE_DIR = Path(__file__).resolve().parent.parent.parent.parent
 
 # Application definition
 
@@ -30,7 +18,6 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'vote_on_todos.django_back_end',
-    'vote_on_todos.website.bootstrap',
 ]
 
 MIDDLEWARE = [
@@ -77,8 +64,7 @@ WSGI_APPLICATION = 'vote_on_todos.website.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        # See Note [Settings unsuitable for production]
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'NAME': os.getenv('DATABASE_PATH', BASE_DIR / 'db.sqlite3'),
     },
 }
 
@@ -106,7 +92,7 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 
 LANGUAGE_CODE = 'en-gb'
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Europe/London'
 
 USE_I18N = True
 USE_TZ = True
