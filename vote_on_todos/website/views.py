@@ -77,3 +77,49 @@ class List(generic.TemplateView):
         }
 
         return super().get_context_data(**kwargs) | context
+
+
+class NewTodoForm(forms.Form):
+    title = forms.CharField()
+    description = forms.CharField(required=False)
+
+
+class NewTodo(generic.FormView):  # type: ignore[type-arg]
+    # TypeError: type 'FormView' is not subscriptable
+
+    form_class = NewTodoForm
+    template_name = 'new-todo.html'
+
+    def setup(self, request: http.HttpRequest, *args: Any, **kwargs: Any) -> None:
+        super().setup(request, *args, **kwargs)
+
+        self.list_id = kwargs['list_id']
+
+    def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
+        list_queries = config.get_list_queries()
+
+        context = {
+            'list': list_queries.get_list(self.list_id),
+        }
+
+        return super().get_context_data(**kwargs) | context
+
+    def form_valid(self, form: NewListForm) -> http.HttpResponse:
+        title = form.cleaned_data['title']
+        description = form.cleaned_data['description']
+
+        application = config.get_new_todo_service()
+        application.create_new_todo(
+            title=title,
+            list_id=self.list_id,
+            description=description,
+            created_by='',  # See Note [Users are not logged in]
+            created_at=datetime.datetime.now(datetime.UTC),
+        )
+
+        messages.success(self.request, f'New todo created: {title}')
+
+        return super().form_valid(form)
+
+    def get_success_url(self) -> str:
+        return django.urls.reverse('list', kwargs={'list_id': self.list_id})

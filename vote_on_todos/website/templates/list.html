@@ -10,6 +10,10 @@
 
 <p>{{ list.description }}</p>
 
+<a class="btn btn-primary" href="{% url 'new-todo' list_id=list.id %}">
+  New todo
+</a>
+
 <table class="table">
   <thead>
     <tr>

@@ -19,6 +19,16 @@ def _create_list(
     return form.submit()
 
 
+def _create_todo(
+    django_app: DjangoTestApp, list_id: str, title: str, description: str,
+) -> DjangoWebtestResponse:
+    page = django_app.get(f'/new-todo/{list_id}/')
+    form = page.form
+    form['title'] = title
+    form['description'] = description
+    return form.submit()
+
+
 def test_lists(django_app: DjangoTestApp):
     _create_list(django_app, 'My List', 'Things I need to do')
 
@@ -61,3 +71,20 @@ def test_view_list_no_todos(django_app: DjangoTestApp):
 
 def test_view_nonexistent_list(django_app: DjangoTestApp):
     django_app.get('/list/not-a-list/', status=404)
+
+
+def test_create_new_todo(django_app: DjangoTestApp):
+    _create_list(django_app, 'My List', 'Things I need to do')
+    list_id = queries.ListRepo().get_lists().pop().id
+
+    response = _create_todo(
+        django_app, list_id,
+        'Important task', 'This must be done soon!',
+    )
+
+    assert response.status_code == 302
+
+    response = response.follow()
+    assert response.status_code == 200
+
+    # TODO: assertions on the content of the response
