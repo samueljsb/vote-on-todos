@@ -2,8 +2,10 @@ from __future__ import annotations
 
 import nox
 
+nox.options.sessions = ['pip_compile', 'makemigrations', 'test']
 
-@nox.session(python="3.12", reuse_venv=True)
+
+@nox.session(python='3.12', reuse_venv=True)
 def test(session: nox.Session) -> None:
     """Run tests."""
     session.install(
@@ -30,3 +32,10 @@ def pip_compile(session: nox.Session) -> None:
     session.install('pip-tools')
     _pip_compile(session, 'requirements/prod.in')
     _pip_compile(session, 'requirements/test.in')
+
+
+@nox.session(python='3.12')
+def makemigrations(session: nox.Session) -> None:
+    """Make Django migrations."""
+    session.install('-r', 'requirements/prod.txt')
+    session.run('python', '-m', 'manage', 'makemigrations')

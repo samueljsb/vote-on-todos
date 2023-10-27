@@ -45,7 +45,7 @@ repos:
     rev: v1.6.1
     hooks:
     -   id: mypy
-        additional_dependencies: [attrs, django-stubs, nox]
+        additional_dependencies: [attrs, cattrs, django-stubs, nox]
 -   repo: https://github.com/pre-commit/pygrep-hooks
     rev: v1.10.0
     hooks:

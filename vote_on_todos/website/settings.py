@@ -29,6 +29,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'vote_on_todos.django_back_end',
+    'vote_on_todos.website.bootstrap',
 ]
 
 MIDDLEWARE = [

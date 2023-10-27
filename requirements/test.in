@@ -2,4 +2,6 @@
 
 covdefaults
 coverage
+factory-boy
 pytest
+pytest-django
