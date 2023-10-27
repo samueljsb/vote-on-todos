@@ -1,4 +1,5 @@
 {% extends '_base.html' %}
+{% load tz %}
 
 {% block breadcrumbs %}
   <li class="breadcrumb-item"><a href="{% url 'lists' %}">Todo lists</a></li>
@@ -19,12 +20,20 @@
   <thead>
     <tr>
       <th>Todo</th><th>Description</th>
-    </tr>
   </thead>
   <tbody>
     {% for todo in todos %}
     <tr>
-      <td>{{ todo.title }}</td><td>{{ todo.description|linebreaks }}</td>
+      <td>
+        {{ todo.title }}
+      </td>
+      <td>
+        {{ todo.description|linebreaks }}
+        <small class="text-secondary">
+          added by {{ todo.creator }}
+          on <span title="{{ todo.created_at|localtime }}">{{ todo.created_at|localtime|date }}</span>
+        </small>
+      </td>
     </tr>
     {% empty %}
     <tr><td colspan="2">no items yet: you should create one!</td></tr>
