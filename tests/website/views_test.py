@@ -17,13 +17,21 @@ def _create_list(
     return form.submit()
 
 
+def test_lists(django_app: DjangoTestApp):
+    _create_list(django_app, 'My List', 'Things I need to do')
+
+    response = django_app.get('/lists/')
+
+    assert response.status_code == 200
+    assert 'My List' in response
+    assert 'no lists' not in response
+
+
 def test_lists_none_found(django_app: DjangoTestApp):
     response = django_app.get('/lists/')
 
     assert response.status_code == 200
     assert 'no lists: you should create one!' in response
-
-# TODO: test with lists
 
 
 def test_create_new_list(django_app: DjangoTestApp):
