@@ -98,6 +98,6 @@ def get_items(events: Sequence[Event]) -> dict[ListId, list[TodoItem]]:
                 ),
             )
         else:  # pragma: no cover
-            raise TypeError(f"unexpected event type: {type(event)!r}")
+            raise TypeError(f'unexpected event type: {type(event)!r}')
 
     return lists

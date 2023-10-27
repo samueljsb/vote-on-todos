@@ -1,0 +1,31 @@
+target-version = "py312"
+
+[lint]
+select = [
+  "B",  # flake8-bugbear
+  "C4",  # flake8-comprehensions
+  "E",  # pycodestyle
+  "F",  # pyflakes
+  "G",  # flake8-logging-format
+  "INP",  # implicit namespace packages
+  "LOG",  # flake8-logging
+  "PERF",  # Perflint
+  "PGH",  # pygrep-hooks
+  "Q",  # quotes
+  "RUF",
+  "T10",  # flake8-debugger
+  "UP",  # pyupgrade
+  "W",  # pycodestyle
+]
+
+ignore = [
+  "E501",  # covered by B950 (in flake8)
+  "RUF100",  # unused-noqa: this removes necessary ignores
+  "UP040",  # mypy does not support this yet
+]
+
+[per-file-ignores]
+"vote_on_todos/django_back_end/*" = ["RUF012"]  # mutable-class-default: is noisy in Django
+
+[flake8-quotes]
+inline-quotes = "single"
