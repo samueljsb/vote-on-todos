@@ -58,3 +58,22 @@ class NewList(generic.FormView):  # type: ignore[type-arg]
         messages.success(self.request, f'New todo list created: {name}')
 
         return super().form_valid(form)
+
+
+class List(generic.TemplateView):
+    template_name = 'list.html'
+
+    def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
+        list_id = kwargs['list_id']
+
+        list_queries = config.get_list_queries()
+        todo_queries = config.get_todo_queries()
+
+        context = {
+            'list': list_queries.get_list(list_id),
+            'todos': sorted(
+                todo_queries.get_list(list_id), key=lambda todo: todo.created_at,
+            ),
+        }
+
+        return super().get_context_data(**kwargs) | context

@@ -1,0 +1,25 @@
+{% extends '_base.html' %}
+
+{% block content %}
+<h1>{{ list.name }}</h1>
+
+<p>{{ list.description }}</p>
+
+<table class="table">
+  <thead>
+    <tr>
+      <th>Todo</th><th>Description</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for todo in todos %}
+    <tr>
+      <td>{{ todo.title }}</td><td>{{ todo.description|linebreaks }}</td>
+    </tr>
+    {% empty %}
+    <tr><td colspan="2">no items yet: you should create one!</td></tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+{% endblock content %}

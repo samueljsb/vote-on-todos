@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from . import models
 from vote_on_todos.todos.domain import lists
+from vote_on_todos.todos.domain import todos
 
 
 class ListRepo:
@@ -25,5 +26,27 @@ class ListRepo:
     def get_lists(self) -> list[lists.TodoList]:
         return list(self._get_lists().values())
 
+    def get_list(self, list_id: str) -> lists.TodoList:
+        return self._get_lists()[list_id]
+
     def is_list(self, list_id: str) -> bool:
         return list_id in self._get_lists(list_id)
+
+
+class TodoRepo:
+    def _get_lists(self) -> dict[str, list[todos.TodoItem]]:
+        qs = models.TodoEvent.objects.all()
+
+        events = [
+            models.TodoEvent.payload_converter.loads(
+                evt.payload, models.todo_event_type(
+                    evt.event_type, evt.event_type_version,
+                ),
+            )
+            for evt in qs.order_by('timestamp')
+        ]
+
+        return todos.get_items(events)
+
+    def get_list(self, list_id: str) -> list[todos.TodoItem]:
+        return self._get_lists()[list_id]

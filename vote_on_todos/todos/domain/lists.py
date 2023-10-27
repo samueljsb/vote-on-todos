@@ -70,7 +70,7 @@ def get_lists(events: Sequence[Event]) -> dict[ListId, TodoList]:
                 description=event.description,
                 creator=event.created_by,
             )
-        else:
+        else:  # pragma: no cover
             raise TypeError(f"unexpected event type: {type(event)!r}")
 
     return lists

@@ -4,6 +4,8 @@ import pytest
 from django_webtest import DjangoTestApp
 from django_webtest import DjangoWebtestResponse
 
+from vote_on_todos.django_back_end import queries
+
 pytestmark = pytest.mark.django_db(transaction=True)
 
 
@@ -43,3 +45,19 @@ def test_create_new_list(django_app: DjangoTestApp):
     assert response.status_code == 200
 
     # TODO: assertions on the content of the response
+
+
+def test_view_list_no_todos(django_app: DjangoTestApp):
+    response = _create_list(django_app, 'My List', 'Things I need to do')
+
+    list_id = queries.ListRepo().get_lists().pop().id
+
+    response = django_app.get(f'/lists/{list_id}/')
+
+    assert response.status_code == 200
+    assert 'My List' in response
+    assert 'no items yet: you should create one!' in response
+
+
+def test_view_nonexistent_list(django_app: DjangoTestApp):
+    django_app.get('/list/not-a-list/', status=404)

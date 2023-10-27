@@ -13,5 +13,9 @@ def get_list_queries() -> queries.ListRepo:
     return queries.ListRepo()
 
 
+def get_todo_queries() -> queries.TodoRepo:
+    return queries.TodoRepo()
+
+
 def get_new_list_service() -> NewList:
     return NewList(committer=get_committer())
