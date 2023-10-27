@@ -7,6 +7,7 @@ import django.urls
 from django import forms
 from django import http
 from django.contrib import messages
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views import generic
 
 from . import config
@@ -16,7 +17,7 @@ from . import config
 # We have not implemented auth on this site yet, so users are never logged in.
 
 
-class Lists(generic.TemplateView):
+class Lists(LoginRequiredMixin, generic.TemplateView):
     template_name = 'lists.html'
 
     def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
@@ -36,7 +37,7 @@ class NewListForm(forms.Form):
     description = forms.CharField(required=False)
 
 
-class NewList(generic.FormView):  # type: ignore[type-arg]
+class NewList(LoginRequiredMixin, generic.FormView):  # type: ignore[type-arg]
     # TypeError: type 'FormView' is not subscriptable
 
     form_class = NewListForm
@@ -60,7 +61,7 @@ class NewList(generic.FormView):  # type: ignore[type-arg]
         return super().form_valid(form)
 
 
-class List(generic.TemplateView):
+class List(LoginRequiredMixin, generic.TemplateView):
     template_name = 'list.html'
 
     def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
@@ -84,7 +85,7 @@ class NewTodoForm(forms.Form):
     description = forms.CharField(required=False)
 
 
-class NewTodo(generic.FormView):  # type: ignore[type-arg]
+class NewTodo(LoginRequiredMixin, generic.FormView):  # type: ignore[type-arg]
     # TypeError: type 'FormView' is not subscriptable
 
     form_class = NewTodoForm

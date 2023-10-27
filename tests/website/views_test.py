@@ -12,7 +12,7 @@ pytestmark = pytest.mark.django_db(transaction=True)
 def _create_list(
     django_app: DjangoTestApp, name: str, description: str,
 ) -> DjangoWebtestResponse:
-    page = django_app.get('/new-list/')
+    page = django_app.get('/new-list/', user='some-user')
     form = page.form
     form['list_name'] = name
     form['description'] = description
@@ -22,17 +22,24 @@ def _create_list(
 def _create_todo(
     django_app: DjangoTestApp, list_id: str, title: str, description: str,
 ) -> DjangoWebtestResponse:
-    page = django_app.get(f'/new-todo/{list_id}/')
+    page = django_app.get(f'/new-todo/{list_id}/', user='some-user')
     form = page.form
     form['title'] = title
     form['description'] = description
     return form.submit()
 
 
+def test_redirected_to_login_if_not_logged_in(django_app: DjangoTestApp):
+    response = django_app.get('/lists/')
+
+    assert response.status_code == 302
+    assert response.location == '/accounts/login/?next=/lists/'
+
+
 def test_lists(django_app: DjangoTestApp):
     _create_list(django_app, 'My List', 'Things I need to do')
 
-    response = django_app.get('/lists/')
+    response = django_app.get('/lists/', user='some-user')
 
     assert response.status_code == 200
     assert 'My List' in response
@@ -40,7 +47,7 @@ def test_lists(django_app: DjangoTestApp):
 
 
 def test_lists_none_found(django_app: DjangoTestApp):
-    response = django_app.get('/lists/')
+    response = django_app.get('/lists/', user='some-user')
 
     assert response.status_code == 200
     assert 'no lists: you should create one!' in response
@@ -62,7 +69,7 @@ def test_view_list_no_todos(django_app: DjangoTestApp):
 
     list_id = queries.ListRepo().get_lists().pop().id
 
-    response = django_app.get(f'/lists/{list_id}/')
+    response = django_app.get(f'/lists/{list_id}/', user='some-user')
 
     assert response.status_code == 200
     assert 'My List' in response
@@ -70,7 +77,7 @@ def test_view_list_no_todos(django_app: DjangoTestApp):
 
 
 def test_view_nonexistent_list(django_app: DjangoTestApp):
-    django_app.get('/list/not-a-list/', status=404)
+    django_app.get('/list/not-a-list/', user='some-user', status=404)
 
 
 def test_create_new_todo(django_app: DjangoTestApp):
