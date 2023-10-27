@@ -3,18 +3,25 @@
 {% block content %}
 <h1>Todo lists</h1>
 
-{% if not todo_lists %}
-<p>no lists: you should create one!</p>
-{% endif %}
+<a class="btn btn-primary" href="{% url 'new-list' %}">
+  New list
+</a>
 
-<ul>
-  {% for list in todo_lists %}
-    <li>
-      {{ list.name }}
-      <br>
-      {{ list.description }}
-    </li>
-  {% endfor %}
-</ul>
+<table class="table">
+  <thead>
+    <tr>
+      <th>Name</th><th>Description</th>
+    </tr>
+  </thead>
+  <tbody id="listsTable">
+    {% for list in todo_lists %}
+    <tr>
+      <td>{{ list.name }}</td><td>{{ list.description }}</td>
+    </tr>
+    {% empty %}
+    <tr><td colspan="2">no lists: you should create one!</td></tr>
+    {% endfor %}
+  </tbody>
+</table>
 
 {% endblock content %}
