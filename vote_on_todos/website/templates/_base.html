@@ -22,11 +22,13 @@
               {% block breadcrumbs %}{% endblock breadcrumbs %}
             </ol>
           </nav>
-          {% if request.user.is_authenticated %}
-          <span class="navbar-text">
-            logged in as {{ request.user }}
-          </span>
-          {% endif %}
+          <div class="navbar-text">
+            {% if request.user.is_authenticated %}
+              logged in as {{ request.user }} (<a href="{% url 'logout' %}">logout</a>)
+            {% else %}
+              Halt! Who goes there!?
+            {% endif %}
+          </div>
         </div>
       </nav>
 
