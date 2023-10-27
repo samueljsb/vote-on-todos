@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from collections import defaultdict
+
 from . import models
 from vote_on_todos.todos.domain import lists
 from vote_on_todos.todos.domain import todos
@@ -46,7 +48,13 @@ class TodoRepo:
             for evt in qs.order_by('timestamp')
         ]
 
-        return todos.get_items(events)
+        todo_items = todos.get_items(events)
+
+        todo_lists = defaultdict(list)
+        for item in todo_items.values():
+            todo_lists[item.list_id].append(item)
+
+        return todo_lists
 
     def get_list(self, list_id: str) -> list[todos.TodoItem]:
         return self._get_lists()[list_id]

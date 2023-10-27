@@ -3,7 +3,6 @@ from __future__ import annotations
 import abc
 import datetime
 import uuid
-from collections import defaultdict
 from collections.abc import Sequence
 from typing import Protocol
 from typing import TypeAlias
@@ -83,21 +82,19 @@ class TodoItem:
     created_at: datetime.datetime
 
 
-def get_items(events: Sequence[Event]) -> dict[ListId, list[TodoItem]]:
-    lists = defaultdict(list)
+def get_items(events: Sequence[Event]) -> dict[TodoId, TodoItem]:
+    items = {}
     for event in events:
         if isinstance(event, TodoCreatedV1):
-            lists[event.list_id].append(
-                TodoItem(
-                    id=event.todo_id,
-                    list_id=event.list_id,
-                    title=event.title,
-                    description=event.description,
-                    creator=event.created_by,
-                    created_at=event.timestamp,
-                ),
+            items[event.todo_id] = TodoItem(
+                id=event.todo_id,
+                list_id=event.list_id,
+                title=event.title,
+                description=event.description,
+                creator=event.created_by,
+                created_at=event.timestamp,
             )
         else:  # pragma: no cover
             raise TypeError(f'unexpected event type: {type(event)!r}')
 
-    return lists
+    return items
