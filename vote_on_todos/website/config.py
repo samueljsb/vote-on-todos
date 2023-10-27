@@ -4,6 +4,7 @@ from vote_on_todos.django_back_end import queries
 from vote_on_todos.django_back_end import unit_of_work
 from vote_on_todos.todos.application.lists import NewList
 from vote_on_todos.todos.application.todos import NewTodo
+from vote_on_todos.todos.application.todos import Upvote
 
 
 def get_committer() -> unit_of_work.DjangoCommitter:
@@ -25,5 +26,12 @@ def get_new_list_service() -> NewList:
 def get_new_todo_service() -> NewTodo:
     return NewTodo(
         lists=get_list_queries(),
+        committer=get_committer(),
+    )
+
+
+def get_upvote_service() -> Upvote:
+    return Upvote(
+        todos=get_todo_queries(),
         committer=get_committer(),
     )

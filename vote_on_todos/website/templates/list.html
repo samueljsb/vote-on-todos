@@ -19,7 +19,7 @@
 <table class="table">
   <thead>
     <tr>
-      <th>Todo</th><th>Description</th>
+      <th>Todo</th><th>Description</th><th></th>
   </thead>
   <tbody>
     {% for todo in todos %}
@@ -33,6 +33,23 @@
           added by {{ todo.creator }}
           on <span title="{{ todo.created_at|localtime }}">{{ todo.created_at|localtime|date }}</span>
         </small>
+      </td>
+      <td>
+        {% if request.user.username in todo.upvotes %}
+          <button class="btn btn-success" title="Upvoted">
+            <i class="bi-hand-thumbs-up" role="img" aria-label="Upvoted"></i>
+          </button>
+        {% else %}
+          <form id="upvote-{{ todo.id }}"
+            method="post" action="{% url 'upvote' todo_id=todo.id %}"
+          >
+            {% csrf_token %}
+            <input type="hidden" name="todo_id" value="{{ todo.id }}">
+            <button type="submit" class="btn btn-outline-success" title="Upvote">
+              <i class="bi-hand-thumbs-up" role="img" aria-label="Upvote"></i>
+            </button>
+          </form>
+        {% endif %}
       </td>
     </tr>
     {% empty %}

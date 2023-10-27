@@ -46,3 +46,44 @@ class NewTodo:
                 raise ListDoesNotExist from e
             else:
                 new_events.append(new_event)
+
+
+class TodoDoesNotExist(Exception):
+    pass
+
+
+class AlreadyUpvoted(Exception):
+    pass
+
+
+@attrs.frozen
+class Upvote:
+    committer: unit_of_work.Committer
+    _todos: todos.TodoQueries
+
+    def upvote(
+        self, *,
+        todo_id: str, user_id: str,
+        upvote_at: datetime.datetime,
+    ) -> None:
+        """Upvote a todo item.
+
+        Raises:
+            TodoDoesNotExist: The todo item does not exist.
+            AlreadyUpvoted: This todo item has already been upvoted by this user.
+        """
+        with unit_of_work.commit_on_success(self.committer) as new_events:
+            domain = todos.Voting(todos=self._todos)
+
+            try:
+                new_event = domain.upvote(
+                    todo_id,
+                    user_id=user_id,
+                    upvote_at=upvote_at,
+                )
+            except todos.TodoDoesNotExist as e:
+                raise TodoDoesNotExist from e
+            except todos.AlreadyUpvoted as e:
+                raise AlreadyUpvoted from e
+            else:
+                new_events.append(new_event)

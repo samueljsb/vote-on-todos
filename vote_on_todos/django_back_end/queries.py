@@ -36,7 +36,7 @@ class ListRepo:
 
 
 class TodoRepo:
-    def _get_lists(self) -> dict[str, list[todos.TodoItem]]:
+    def _get_todos(self) -> dict[str, todos.TodoItem]:
         qs = models.TodoEvent.objects.all()
 
         events = [
@@ -48,13 +48,17 @@ class TodoRepo:
             for evt in qs.order_by('timestamp')
         ]
 
-        todo_items = todos.get_items(events)
+        return todos.get_items(events)
 
+    def _get_lists(self) -> dict[str, list[todos.TodoItem]]:
         todo_lists = defaultdict(list)
-        for item in todo_items.values():
+        for item in self._get_todos().values():
             todo_lists[item.list_id].append(item)
 
         return todo_lists
 
     def get_list(self, list_id: str) -> list[todos.TodoItem]:
         return self._get_lists()[list_id]
+
+    def get_todo(self, todo_id: str) -> todos.TodoItem | None:
+        return self._get_todos().get(todo_id)
