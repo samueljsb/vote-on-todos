@@ -12,9 +12,11 @@ from django.views import generic
 
 from . import config
 
-# Note [Users are not logged in]
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-# We have not implemented auth on this site yet, so users are never logged in.
+
+# Note [User identification is naive]
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# We are currently using usernames to identify users. This is not reasonable (a user
+# might change their name) but is a compromise for simplicity for now.
 
 
 class Lists(LoginRequiredMixin, generic.TemplateView):
@@ -52,7 +54,8 @@ class NewList(LoginRequiredMixin, generic.FormView):  # type: ignore[type-arg]
         application.create_new_list(
             name=name,
             description=description,
-            created_by='',  # See Note [Users are not logged in]
+            # See Note [User identification is naive]
+            created_by=self.request.user.username,  # type: ignore[arg-type]
             created_at=datetime.datetime.now(datetime.UTC),
         )
 
@@ -114,7 +117,8 @@ class NewTodo(LoginRequiredMixin, generic.FormView):  # type: ignore[type-arg]
             title=title,
             list_id=self.list_id,
             description=description,
-            created_by='',  # See Note [Users are not logged in]
+            # See Note [User identification is naive]
+            created_by=self.request.user.username,  # type: ignore[arg-type]
             created_at=datetime.datetime.now(datetime.UTC),
         )
 
