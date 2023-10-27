@@ -1,0 +1,20 @@
+{% extends '_base.html' %}
+
+{% block content %}
+<h1>Todo lists</h1>
+
+{% if not todo_lists %}
+<p>no lists: you should create one!</p>
+{% endif %}
+
+<ul>
+  {% for list in todo_lists %}
+    <li>
+      {{ list.name }}
+      <br>
+      {{ list.description }}
+    </li>
+  {% endfor %}
+</ul>
+
+{% endblock content %}
