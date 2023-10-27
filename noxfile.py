@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import nox
 
-nox.options.sessions = ['pip_compile', 'makemigrations', 'test']
+nox.options.sessions = ['pip_compile', 'makemigrations', 'test', 'lint']
 
 
 _LOCAL_SETTINGS_MODULE = 'vote_on_todos.website.settings.local'
@@ -20,6 +20,13 @@ def test(session: nox.Session) -> None:
         'coverage', 'run', '-m', 'pytest', 'tests', *session.posargs,
     )
     session.run('coverage', 'report')
+
+
+@nox.session(python='3.12', reuse_venv=True)
+def lint(session: nox.Session) -> None:
+    """Run linters."""
+    session.install('pre-commit')
+    session.run('pre-commit', 'run', '--all-files')
 
 
 def _pip_compile(session: nox.Session, path: str) -> None:
