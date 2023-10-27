@@ -39,3 +39,11 @@ def makemigrations(session: nox.Session) -> None:
     """Make Django migrations."""
     session.install('-r', 'requirements/prod.txt')
     session.run('python', '-m', 'manage', 'makemigrations')
+
+
+@nox.session(python='3.12', reuse_venv=True)
+def runserver(session: nox.Session) -> None:
+    """Run the Django server."""
+    session.install('-r', 'requirements/prod.txt')
+    session.run('python', '-m', 'manage', 'migrate')
+    session.run('python', '-m', 'manage', 'runserver')
