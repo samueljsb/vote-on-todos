@@ -26,7 +26,7 @@
             {% if request.user.is_authenticated %}
               logged in as {{ request.user }} (<a href="{% url 'logout' %}">logout</a>)
             {% else %}
-              Halt! Who goes there!?
+              Don't have an account? <a href="{% url 'signup' %}">Sign up!</a>
             {% endif %}
           </div>
         </div>

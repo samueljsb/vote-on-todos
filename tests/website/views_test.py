@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import pytest
+from django.contrib.auth import models as auth_models
 from django_webtest import DjangoTestApp
 from django_webtest import DjangoWebtestResponse
 
@@ -150,3 +151,34 @@ def test_remove_upvote_todo(django_app: DjangoTestApp):
     assert response.status_code == 200
 
     # TODO: assertions on the content of the response
+
+
+# Auth
+# ====
+
+def test_signup(django_app: DjangoTestApp):
+    page = django_app.get('/accounts/signup/')
+    form = page.form
+    form['username'] = 'new-user'
+    form['password'] = 'correct horse battery staple'
+    form['password_confirm'] = 'correct horse battery staple'
+    response = form.submit()
+
+    assert response.status_code == 302
+
+    auth_models.User.objects.get(username='new-user')
+
+
+def test_signup_unmatched_password(django_app: DjangoTestApp):
+    page = django_app.get('/accounts/signup/')
+    form = page.form
+    form['username'] = 'new-user'
+    form['password'] = 'correct horse battery staple'
+    form['password_confirm'] = 'correct battery horse staple'
+    response = form.submit()
+
+    assert response.status_code == 200
+    assert 'The two password fields didn&#x27;t match.' in response
+
+    with pytest.raises(auth_models.User.DoesNotExist):
+        auth_models.User.objects.get(username='new-user')

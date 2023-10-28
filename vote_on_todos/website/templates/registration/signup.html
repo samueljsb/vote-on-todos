@@ -7,7 +7,7 @@
 {% block content %}
 <div class="card">
   <div class="card-body">
-    <h1 class="card-title">Login</h1>
+    <h1 class="card-title">Sign up</h1>
     {% for error in form.non_field_errors %}
       <div class="alert alert-danger" role="alert">
         {{ error }}
@@ -40,8 +40,19 @@
           </div>
         {% endfor %}
       </div>
+      <div class="mb-3">
+        <label for="password_confirm" class="form-label">Confirm Password</label>
+        <input id="password_confirm"
+        name="password_confirm" type="password"
+        class="form-control {% if form.password_confirm.errors %}is-invalid{% endif %}"
+        >
+        {% for error in form.password_confirm.errors %}
+          <div class="invalid-feedback">
+            {{ error }}
+          </div>
+        {% endfor %}
+      </div>
       <button type="submit" class="btn btn-primary">Log in</button>
-      <input type="hidden" name="next" value="{{ next }}">
     </form>
 
     <p>Lost your password? You'll have to talk to an admin to get it reset.</p>

@@ -3,13 +3,18 @@ from __future__ import annotations
 import datetime
 from typing import Any
 
+import django.contrib.auth.forms
 import django.urls
 from django import forms
 from django import http
 from django.contrib import messages
+from django.contrib.auth import models as auth_models
+from django.contrib.auth import password_validation
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import HttpResponse
+from django.utils.decorators import method_decorator
 from django.views import generic
+from django.views.decorators.debug import sensitive_post_parameters
 
 from . import config
 from vote_on_todos.todos.application import todos as todo_services
@@ -205,5 +210,47 @@ class RemoveUpvoteFromTodo(LoginRequiredMixin, generic.FormView):  # type: ignor
             pass  # nothing to do
         except todo_services.TodoDoesNotExist:  # pragma: no cover
             messages.error(self.request, "That todo doesn't exist anymore 🤔")
+
+        return super().form_valid(form)
+
+
+# Auth
+# ====
+
+class SignupForm(forms.Form):
+    username = forms.CharField()
+    password = forms.CharField()
+    password_confirm = forms.CharField()
+
+    def clean_password_confirm(self) -> Any:
+        # this is adapted from django.contrib.auth.forms.PasswordChangeForm
+        password = self.cleaned_data.get('password')
+        password_confirm = self.cleaned_data.get('password_confirm')
+        if password and password_confirm and password != password_confirm:
+            raise forms.ValidationError(
+                "The two password fields didn't match.",
+                code='password_mismatch',
+            )
+
+        password_validation.validate_password(password)  # type: ignore[arg-type]
+
+        return password_confirm
+
+
+class Signup(generic.FormView):  # type: ignore[type-arg]
+    # TypeError: type 'FormView' is not subscriptable
+
+    form_class = SignupForm
+    template_name = 'registration/signup.html'
+    success_url = django.urls.reverse_lazy('lists')
+
+    @method_decorator(sensitive_post_parameters())
+    def dispatch(self, *args: Any, **kwargs: Any) -> http.response.HttpResponseBase:
+        return super().dispatch(*args, **kwargs)
+
+    def form_valid(self, form: SignupForm) -> http.HttpResponse:
+        auth_models.User.objects.create_user(
+            form.cleaned_data['username'], '', form.cleaned_data['password'],
+        )
 
         return super().form_valid(form)
