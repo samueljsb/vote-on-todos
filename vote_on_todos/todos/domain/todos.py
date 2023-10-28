@@ -195,6 +195,7 @@ class TodoItem:
     creator: UserId
     created_at: datetime.datetime
     done_at: datetime.datetime | None = None
+    completor: UserId | None = None
 
     upvotes: set[UserId] = attrs.field(factory=set)
 
@@ -220,6 +221,7 @@ def get_items(events: Sequence[Event]) -> dict[TodoId, TodoItem]:
             items[event.todo_id].next_index = event.index + 1
         elif isinstance(event, TodoDoneV1):
             items[event.todo_id].done_at = event.timestamp
+            items[event.todo_id].completor = event.recorded_by
             items[event.todo_id].next_index = event.index + 1
         else:  # pragma: no cover
             raise TypeError(f'unexpected event type: {type(event)!r}')

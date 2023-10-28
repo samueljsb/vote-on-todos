@@ -9,31 +9,38 @@
     <small class="text-secondary">
       added by {{ todo.creator }}
       on <span title="{{ todo.created_at|localtime }}">{{ todo.created_at|localtime|date }}</span>
+      {% if todo.done_at %}
+        <br>
+        completed by {{ todo.completor }}
+        on <span title="{{ todo.done_at|localtime }}">{{ todo.done_at|localtime|date }}</span>
+      {% endif %}
     </small>
   </td>
   <td>
-    {% if request.user.username in todo.upvotes %}
-      <form id="remove-upvote-{{ todo.id }}"
-        method="post" action="{% url 'remove-upvote' todo_id=todo.id %}"
-      >
-        {% csrf_token %}
-        <input type="hidden" name="todo_id" value="{{ todo.id }}">
-        <button type="submit" class="btn btn-success" title="Remove upvote">
-          <i class="bi-hand-thumbs-up" role="img" aria-label="Upvote"></i>
-          {{ todo.upvotes|length }}
-        </button>
-      </form>
-    {% else %}
-      <form id="upvote-{{ todo.id }}"
-        method="post" action="{% url 'upvote' todo_id=todo.id %}"
-      >
-        {% csrf_token %}
-        <input type="hidden" name="todo_id" value="{{ todo.id }}">
-        <button type="submit" class="btn btn-outline-success" title="Upvote">
-          <i class="bi-hand-thumbs-up" role="img" aria-label="Upvote"></i>
-          {{ todo.upvotes|length }}
-        </button>
-      </form>
+    {% if not todo.done_at %}
+      {% if request.user.username in todo.upvotes %}
+        <form id="remove-upvote-{{ todo.id }}"
+          method="post" action="{% url 'remove-upvote' todo_id=todo.id %}"
+        >
+          {% csrf_token %}
+          <input type="hidden" name="todo_id" value="{{ todo.id }}">
+          <button type="submit" class="btn btn-success" title="Remove upvote">
+            <i class="bi-hand-thumbs-up" role="img" aria-label="Upvote"></i>
+            {{ todo.upvotes|length }}
+          </button>
+        </form>
+      {% else %}
+        <form id="upvote-{{ todo.id }}"
+          method="post" action="{% url 'upvote' todo_id=todo.id %}"
+        >
+          {% csrf_token %}
+          <input type="hidden" name="todo_id" value="{{ todo.id }}">
+          <button type="submit" class="btn btn-outline-success" title="Upvote">
+            <i class="bi-hand-thumbs-up" role="img" aria-label="Upvote"></i>
+            {{ todo.upvotes|length }}
+          </button>
+        </form>
+      {% endif %}
     {% endif %}
   </td>
   <td>

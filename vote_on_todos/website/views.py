@@ -80,11 +80,19 @@ class List(LoginRequiredMixin, generic.TemplateView):
         list_queries = config.get_list_queries()
         todo_queries = config.get_todo_queries()
 
+        all_todos = todo_queries.get_list(list_id)
+        incomplete_todos = [todo for todo in all_todos if todo.done_at is None]
+        completed_todos = [todo for todo in all_todos if todo.done_at is not None]
+
         context = {
             'list': list_queries.get_list(list_id),
-            'todos': sorted(
-                todo_queries.get_list(list_id),
+            'incomplete_todos': sorted(
+                incomplete_todos,
                 key=lambda todo: (-len(todo.upvotes), todo.created_at),
+            ),
+            'completed_todos': sorted(
+                completed_todos,
+                key=lambda todo: (todo.done_at, todo.created_at),
             ),
         }
 

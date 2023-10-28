@@ -15,7 +15,7 @@
   New todo
 </a>
 
-<table class="table">
+<table class="table mb-4">
   <thead>
     <tr>
       <th>Todo</th>
@@ -24,12 +24,29 @@
       <th></th>  <!-- actions -->
   </thead>
   <tbody>
-    {% for todo in todos %}
+    {% for todo in incomplete_todos %}
       {% include 'partials/todo-row.html' %}
     {% empty %}
     <tr><td colspan="2">no items yet: you should create one!</td></tr>
     {% endfor %}
   </tbody>
 </table>
+
+{% if completed_todos %}
+  <table class="table table-secondary mb-4">
+    <thead>
+      <tr>
+        <th>Completed</th>
+        <th>Description</th>
+        <th></th>  <!-- voting -->
+        <th></th>  <!-- actions -->
+    </thead>
+    <tbody>
+      {% for todo in completed_todos %}
+        {% include 'partials/todo-row.html' %}
+      {% endfor %}
+    </tbody>
+  </table>
+{% endif %}
 
 {% endblock content %}
