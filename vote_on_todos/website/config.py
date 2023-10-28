@@ -3,6 +3,7 @@ from __future__ import annotations
 from vote_on_todos.django_back_end import queries
 from vote_on_todos.django_back_end import unit_of_work
 from vote_on_todos.todos.application.lists import NewList
+from vote_on_todos.todos.application.todos import Complete
 from vote_on_todos.todos.application.todos import NewTodo
 from vote_on_todos.todos.application.todos import Upvote
 
@@ -32,6 +33,13 @@ def get_new_todo_service() -> NewTodo:
 
 def get_upvote_service() -> Upvote:
     return Upvote(
+        todos=get_todo_queries(),
+        committer=get_committer(),
+    )
+
+
+def get_complete_service() -> Complete:
+    return Complete(
         todos=get_todo_queries(),
         committer=get_committer(),
     )

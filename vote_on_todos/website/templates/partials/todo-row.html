@@ -36,4 +36,18 @@
       </form>
     {% endif %}
   </td>
+  <td>
+    {% if not todo.done_at %}
+      <form id="complete-{{ todo.id }}"
+        method="post" action="{% url 'complete' todo_id=todo.id %}"
+        onsubmit="return confirm('Complete this todo?');"
+      >
+        {% csrf_token %}
+        <input type="hidden" name="todo_id" value="{{ todo.id }}">
+        <button type="submit" class="btn btn-outline-primary" title="Mark done">
+          <i class="bi-check2-square" role="img" aria-label="Mark done"></i>
+        </button>
+      </form>
+    {% endif %}
+  </td>
 </tr>

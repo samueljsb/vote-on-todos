@@ -118,3 +118,40 @@ class Upvote:
                 raise NotUpvoted from e
             else:
                 new_events.append(new_event)
+
+
+class AlreadyDone(Exception):
+    pass
+
+
+@attrs.frozen
+class Complete:
+    committer: unit_of_work.Committer
+    _todos: todos.TodoQueries
+
+    def mark_done(
+        self, *,
+        todo_id: str, user_id: str,
+        record_at: datetime.datetime,
+    ) -> None:
+        """Mark a todo item as completed.
+
+        Raises:
+            TodoDoesNotExist: The todo item does not exist.
+            AlreadyDone: This todo item has already been marked complete.
+        """
+        with unit_of_work.commit_on_success(self.committer) as new_events:
+            domain = todos.Completion(todos=self._todos)
+
+            try:
+                new_event = domain.mark_done(
+                    todo_id=todo_id,
+                    user_id=user_id,
+                    record_at=record_at,
+                )
+            except todos.TodoDoesNotExist as e:
+                raise TodoDoesNotExist from e
+            except todos.AlreadyDone as e:
+                raise AlreadyDone from e
+            else:
+                new_events.append(new_event)

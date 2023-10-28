@@ -20,4 +20,5 @@ urlpatterns = [
         'todo/<todo_id>/remove-upvote/', views.RemoveUpvoteFromTodo.as_view(),
         name='remove-upvote',
     ),
+    path('todo/<todo_id>/complete/', views.CompleteTodo.as_view(), name='complete'),
 ]

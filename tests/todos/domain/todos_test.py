@@ -149,3 +149,54 @@ class TestVoting:
                 user_id='someone',
                 remove_at=datetime.datetime(2023, 1, 2, 3, 4, 5),
             )
+
+
+class TestCompletion:
+    def test_mark_todo_done(self):
+        completion = todos.Completion(
+            todos=todo_helpers.TodoRepo({
+                'todo-1': todo_helpers.TodoItem(id='todo-1', next_index=2),
+            }),
+        )
+
+        event = completion.mark_done(
+            'todo-1',
+            user_id='someone',
+            record_at=datetime.datetime(2023, 1, 2, 3, 4, 5),
+        )
+
+        assert event == todos.TodoDoneV1(
+            timestamp=datetime.datetime(2023, 1, 2, 3, 4, 5),
+            todo_id='todo-1', index=2,
+            recorded_by='someone',
+        )
+
+    def test_mark_nonexistent_todo_done(self):
+        completion = todos.Completion(
+            todos=todo_helpers.TodoRepo({
+                'todo-1': todo_helpers.TodoItem(id='todo-1', next_index=2),
+            }),
+        )
+
+        with pytest.raises(todos.TodoDoesNotExist):
+            completion.mark_done(
+                'todo-2',
+                user_id='someone',
+                record_at=datetime.datetime(2023, 1, 2, 3, 4, 5),
+            )
+
+    def test_mark_todo_done_already_done(self):
+        completion = todos.Completion(
+            todos=todo_helpers.TodoRepo({
+                'todo-1': todo_helpers.TodoItem(
+                    id='todo-1', next_index=3, done_at=datetime.datetime(2023, 1, 2),
+                ),
+            }),
+        )
+
+        with pytest.raises(todos.AlreadyDone):
+            completion.mark_done(
+                'todo-1',
+                user_id='someone',
+                record_at=datetime.datetime(2023, 1, 2, 3, 4, 5),
+            )

@@ -43,8 +43,14 @@ class TodoUpvoteRemovedV1(Event):
     removed_by: UserId
 
 
+@attrs.frozen
+class TodoDoneV1(Event):
+    recorded_by: UserId
+
+
 # Services
 # ========
+
 
 class ListQueries(Protocol):
     def is_list(self, list_id: ListId) -> bool: ...
@@ -145,6 +151,35 @@ class Voting:
         )
 
 
+class AlreadyDone(Exception):
+    pass
+
+
+@attrs.frozen
+class Completion:
+    todos: TodoQueries
+
+    def mark_done(
+            self,
+            todo_id: str,
+            *,
+            user_id: UserId,
+            record_at: datetime.datetime,
+    ) -> TodoDoneV1:
+        todo = self.todos.get_todo(todo_id)
+
+        if todo is None:
+            raise TodoDoesNotExist
+        elif todo.done_at is not None:
+            raise AlreadyDone
+
+        return TodoDoneV1(
+            timestamp=record_at,
+            todo_id=todo_id,
+            index=todo.next_index,
+            recorded_by=user_id,
+        )
+
 # Projections
 # ===========
 
@@ -159,6 +194,7 @@ class TodoItem:
     description: str
     creator: UserId
     created_at: datetime.datetime
+    done_at: datetime.datetime | None = None
 
     upvotes: set[UserId] = attrs.field(factory=set)
 
@@ -181,6 +217,9 @@ def get_items(events: Sequence[Event]) -> dict[TodoId, TodoItem]:
             items[event.todo_id].next_index = event.index + 1
         elif isinstance(event, TodoUpvoteRemovedV1):
             items[event.todo_id].upvotes.remove(event.removed_by)
+            items[event.todo_id].next_index = event.index + 1
+        elif isinstance(event, TodoDoneV1):
+            items[event.todo_id].done_at = event.timestamp
             items[event.todo_id].next_index = event.index + 1
         else:  # pragma: no cover
             raise TypeError(f'unexpected event type: {type(event)!r}')

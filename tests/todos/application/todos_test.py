@@ -179,3 +179,64 @@ class TestUpvote:
             )
 
         assert committer.committed == []
+
+
+class TestComplete:
+    def test_mark_done(self):
+        committer = Committer()
+        use_case = todos.Complete(
+            committer=committer,
+            todos=todo_helpers.TodoRepo({
+                'todo-1': todo_helpers.TodoItem(id='todo-1', next_index=2),
+            }),
+        )
+
+        use_case.mark_done(
+            todo_id='todo-1', user_id='some-user',
+            record_at=datetime.datetime(2023, 1, 2, 3, 4, 5),
+        )
+
+        assert committer.committed == [
+            domain.TodoDoneV1(
+                timestamp=datetime.datetime(2023, 1, 2, 3, 4, 5),
+                index=2,
+                todo_id='todo-1',
+                recorded_by='some-user',
+            ),
+        ]
+
+    def test_mark_nonexistent_todo_done(self):
+        committer = Committer()
+        use_case = todos.Complete(
+            committer=committer,
+            todos=todo_helpers.TodoRepo({
+                'todo-1': todo_helpers.TodoItem(id='todo-1', next_index=2),
+            }),
+        )
+
+        with pytest.raises(todos.TodoDoesNotExist):
+            use_case.mark_done(
+                todo_id='todo-2', user_id='some-user',
+                record_at=datetime.datetime(2023, 1, 2, 3, 4, 5),
+            )
+
+        assert committer.committed == []
+
+    def test_mark_already_done_todo_done(self):
+        committer = Committer()
+        use_case = todos.Complete(
+            committer=committer,
+            todos=todo_helpers.TodoRepo({
+                'todo-1': todo_helpers.TodoItem(
+                    id='todo-1', next_index=3, done_at=datetime.datetime(2023, 1, 2),
+                ),
+            }),
+        )
+
+        with pytest.raises(todos.AlreadyDone):
+            use_case.mark_done(
+                todo_id='todo-1', user_id='some-user',
+                record_at=datetime.datetime(2023, 1, 2, 3, 4, 5),
+            )
+
+        assert committer.committed == []
