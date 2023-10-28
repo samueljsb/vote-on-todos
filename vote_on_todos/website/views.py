@@ -78,7 +78,8 @@ class List(LoginRequiredMixin, generic.TemplateView):
         context = {
             'list': list_queries.get_list(list_id),
             'todos': sorted(
-                todo_queries.get_list(list_id), key=lambda todo: todo.created_at,
+                todo_queries.get_list(list_id),
+                key=lambda todo: (-len(todo.upvotes), todo.created_at),
             ),
         }
 
