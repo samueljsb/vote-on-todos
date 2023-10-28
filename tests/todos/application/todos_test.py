@@ -106,7 +106,7 @@ class TestUpvote:
             committer=committer,
             todos=todo_helpers.TodoRepo({
                 'todo-1': todo_helpers.TodoItem(
-                    id='todo-1', next_index=2, upvotes='some-user',
+                    id='todo-1', next_index=2, upvotes={'some-user'},
                 ),
             }),
         )
@@ -115,6 +115,67 @@ class TestUpvote:
             use_case.upvote(
                 todo_id='todo-1', user_id='some-user',
                 upvote_at=datetime.datetime(2023, 1, 2, 3, 4, 5),
+            )
+
+        assert committer.committed == []
+
+    def test_remove_upvote(self):
+        committer = Committer()
+        use_case = todos.Upvote(
+            committer=committer,
+            todos=todo_helpers.TodoRepo({
+                'todo-1': todo_helpers.TodoItem(
+                    id='todo-1', next_index=2, upvotes={'some-user'},
+                ),
+            }),
+        )
+
+        use_case.remove_upvote(
+            todo_id='todo-1', user_id='some-user',
+            remove_at=datetime.datetime(2023, 1, 2, 3, 4, 5),
+        )
+
+        assert committer.committed == [
+            domain.TodoUpvoteRemovedV1(
+                timestamp=datetime.datetime(2023, 1, 2, 3, 4, 5),
+                index=2,
+                todo_id='todo-1',
+                removed_by='some-user',
+            ),
+        ]
+
+    def test_remove_upvote_from_nonexistent_todo(self):
+        committer = Committer()
+        use_case = todos.Upvote(
+            committer=committer,
+            todos=todo_helpers.TodoRepo({
+                'todo-1': todo_helpers.TodoItem(id='todo-1', next_index=2),
+            }),
+        )
+
+        with pytest.raises(todos.TodoDoesNotExist):
+            use_case.remove_upvote(
+                todo_id='todo-2', user_id='some-user',
+                remove_at=datetime.datetime(2023, 1, 2, 3, 4, 5),
+            )
+
+        assert committer.committed == []
+
+    def test_remove_upvote_from_todo_not_upvoted(self):
+        committer = Committer()
+        use_case = todos.Upvote(
+            committer=committer,
+            todos=todo_helpers.TodoRepo({
+                'todo-1': todo_helpers.TodoItem(
+                    id='todo-1', next_index=2, upvotes={},
+                ),
+            }),
+        )
+
+        with pytest.raises(todos.NotUpvoted):
+            use_case.remove_upvote(
+                todo_id='todo-1', user_id='some-user',
+                remove_at=datetime.datetime(2023, 1, 2, 3, 4, 5),
             )
 
         assert committer.committed == []

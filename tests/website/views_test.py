@@ -37,6 +37,14 @@ def _upvote_todo(
     return form.submit()
 
 
+def _remove_upvote_from_todo(
+    django_app: DjangoTestApp, list_id: str, todo_id: str, user: str = 'some-user',
+) -> DjangoWebtestResponse:
+    page = django_app.get(f'/lists/{list_id}/', user=user)
+    form = page.forms[f'remove-upvote-{todo_id}']
+    return form.submit()
+
+
 def test_redirected_to_login_if_not_logged_in(django_app: DjangoTestApp):
     response = django_app.get('/lists/')
 
@@ -115,6 +123,26 @@ def test_upvote_todo(django_app: DjangoTestApp):
     todo_id = queries.TodoRepo().get_list(list_id).pop().id
 
     response = _upvote_todo(django_app, list_id, todo_id)
+
+    assert response.status_code == 302
+
+    response = response.follow()
+    assert response.status_code == 200
+
+    # TODO: assertions on the content of the response
+
+
+def test_remove_upvote_todo(django_app: DjangoTestApp):
+    _create_list(django_app, 'My List', 'Things I need to do')
+    list_id = queries.ListRepo().get_lists().pop().id
+    _create_todo(
+        django_app, list_id,
+        'Important task', 'This must be done soon!',
+    )
+    todo_id = queries.TodoRepo().get_list(list_id).pop().id
+    _upvote_todo(django_app, list_id, todo_id)
+
+    response = _remove_upvote_from_todo(django_app, list_id, todo_id)
 
     assert response.status_code == 302
 

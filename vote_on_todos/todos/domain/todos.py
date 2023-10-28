@@ -38,6 +38,11 @@ class TodoUpvotedV1(Event):
     upvoted_by: UserId
 
 
+@attrs.frozen
+class TodoUpvoteRemovedV1(Event):
+    removed_by: UserId
+
+
 # Services
 # ========
 
@@ -89,6 +94,10 @@ class AlreadyUpvoted(Exception):
     pass
 
 
+class NotUpvoted(Exception):
+    pass
+
+
 @attrs.frozen
 class Voting:
     todos: TodoQueries
@@ -113,6 +122,28 @@ class Voting:
             index=todo.next_index,
             upvoted_by=user_id,
         )
+
+    def remove_upvote(
+            self,
+            todo_id: str,
+            *,
+            user_id: UserId,
+            remove_at: datetime.datetime,
+    ) -> TodoUpvoteRemovedV1:
+        todo = self.todos.get_todo(todo_id)
+
+        if todo is None:
+            raise TodoDoesNotExist
+        elif user_id not in todo.upvotes:
+            raise NotUpvoted
+
+        return TodoUpvoteRemovedV1(
+            timestamp=remove_at,
+            todo_id=todo_id,
+            index=todo.next_index,
+            removed_by=user_id,
+        )
+
 
 # Projections
 # ===========
@@ -147,6 +178,9 @@ def get_items(events: Sequence[Event]) -> dict[TodoId, TodoItem]:
             )
         elif isinstance(event, TodoUpvotedV1):
             items[event.todo_id].upvotes.add(event.upvoted_by)
+            items[event.todo_id].next_index = event.index + 1
+        elif isinstance(event, TodoUpvoteRemovedV1):
+            items[event.todo_id].upvotes.remove(event.removed_by)
             items[event.todo_id].next_index = event.index + 1
         else:  # pragma: no cover
             raise TypeError(f'unexpected event type: {type(event)!r}')

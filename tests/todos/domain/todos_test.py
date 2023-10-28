@@ -98,3 +98,54 @@ class TestVoting:
                 user_id='someone',
                 upvote_at=datetime.datetime(2023, 1, 2, 3, 4, 5),
             )
+
+    def test_remove_upvote(self):
+        voting = todos.Voting(
+            todos=todo_helpers.TodoRepo({
+                'todo-1': todo_helpers.TodoItem(
+                    id='todo-1', next_index=2, upvotes={'someone'},
+                ),
+            }),
+        )
+
+        event = voting.remove_upvote(
+            'todo-1',
+            user_id='someone',
+            remove_at=datetime.datetime(2023, 1, 2, 3, 4, 5),
+        )
+
+        assert event == todos.TodoUpvoteRemovedV1(
+            timestamp=datetime.datetime(2023, 1, 2, 3, 4, 5),
+            todo_id='todo-1',
+            index=2, removed_by='someone',
+        )
+
+    def test_remove_upvote_from_nonexistent_todo(self):
+        voting = todos.Voting(
+            todos=todo_helpers.TodoRepo({
+                'todo-1': todo_helpers.TodoItem(id='todo-1', next_index=2),
+            }),
+        )
+
+        with pytest.raises(todos.TodoDoesNotExist):
+            voting.remove_upvote(
+                'todo-2',
+                user_id='someone',
+                remove_at=datetime.datetime(2023, 1, 2, 3, 4, 5),
+            )
+
+    def test_remove_upvote_from_todo_not_upvoted(self):
+        voting = todos.Voting(
+            todos=todo_helpers.TodoRepo({
+                'todo-1': todo_helpers.TodoItem(
+                    id='todo-1', next_index=3, upvotes={},
+                ),
+            }),
+        )
+
+        with pytest.raises(todos.NotUpvoted):
+            voting.remove_upvote(
+                'todo-1',
+                user_id='someone',
+                remove_at=datetime.datetime(2023, 1, 2, 3, 4, 5),
+            )

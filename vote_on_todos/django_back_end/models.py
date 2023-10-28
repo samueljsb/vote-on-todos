@@ -48,6 +48,7 @@ class ListEventSequence(models.Model):
 TODO_EVENT_TYPES: dict[type[todos.Event], tuple[str, int]] = {
     todos.TodoCreatedV1: ('TodoCreated', 1),
     todos.TodoUpvotedV1: ('TodoUpvoted', 1),
+    todos.TodoUpvoteRemovedV1: ('TodoUpvoteRemoved', 1),
 }
 
 

@@ -56,6 +56,10 @@ class AlreadyUpvoted(Exception):
     pass
 
 
+class NotUpvoted(Exception):
+    pass
+
+
 @attrs.frozen
 class Upvote:
     committer: unit_of_work.Committer
@@ -85,5 +89,32 @@ class Upvote:
                 raise TodoDoesNotExist from e
             except todos.AlreadyUpvoted as e:
                 raise AlreadyUpvoted from e
+            else:
+                new_events.append(new_event)
+
+    def remove_upvote(
+        self, *,
+        todo_id: str, user_id: str,
+        remove_at: datetime.datetime,
+    ) -> None:
+        """Upvote a todo item.
+
+        Raises:
+            TodoDoesNotExist: The todo item does not exist.
+            NotUpvoted: This todo item has not been upvoted by this user.
+        """
+        with unit_of_work.commit_on_success(self.committer) as new_events:
+            domain = todos.Voting(todos=self._todos)
+
+            try:
+                new_event = domain.remove_upvote(
+                    todo_id,
+                    user_id=user_id,
+                    remove_at=remove_at,
+                )
+            except todos.TodoDoesNotExist as e:
+                raise TodoDoesNotExist from e
+            except todos.NotUpvoted as e:
+                raise NotUpvoted from e
             else:
                 new_events.append(new_event)

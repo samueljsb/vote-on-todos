@@ -169,3 +169,41 @@ class UpvoteTodo(LoginRequiredMixin, generic.FormView):  # type: ignore[type-arg
             messages.error(self.request, "That todo doesn't exist anymore 🤔")
 
         return super().form_valid(form)
+
+
+class RemoveUpvoteFromTodo(LoginRequiredMixin, generic.FormView):  # type: ignore[type-arg]
+    # TypeError: type 'FormView' is not subscriptable
+
+    form_class = forms.Form
+
+    def post(
+            self, request: http.HttpRequest, *args: Any, **kwargs: Any,
+    ) -> HttpResponse:
+        self.todo_id = kwargs['todo_id']
+
+        queries = config.get_todo_queries()
+        todo_item = queries.get_todo(self.todo_id)
+        if todo_item:
+            self.success_url = django.urls.reverse(
+                'list', kwargs={'list_id': todo_item.list_id},
+            )
+        else:  # pragma: no cover
+            self.list_id = django.urls.reverse('lists')
+
+        return super().post(request, *args, **kwargs)
+
+    def form_valid(self, form: NewListForm) -> http.HttpResponse:
+        application = config.get_upvote_service()
+        try:
+            application.remove_upvote(
+                todo_id=self.todo_id,
+                # See Note [User identification is naive]
+                user_id=self.request.user.username,  # type: ignore[arg-type]
+                remove_at=datetime.datetime.now(datetime.UTC),
+            )
+        except todo_services.NotUpvoted:  # pragma: no cover
+            pass  # nothing to do
+        except todo_services.TodoDoesNotExist:  # pragma: no cover
+            messages.error(self.request, "That todo doesn't exist anymore 🤔")
+
+        return super().form_valid(form)

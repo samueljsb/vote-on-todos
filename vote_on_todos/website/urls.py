@@ -13,4 +13,8 @@ urlpatterns = [
     path('new-list/', views.NewList.as_view(), name='new-list'),
     path('new-todo/<list_id>/', views.NewTodo.as_view(), name='new-todo'),
     path('todo/<todo_id>/upvote/', views.UpvoteTodo.as_view(), name='upvote'),
+    path(
+        'todo/<todo_id>/remove-upvote/', views.RemoveUpvoteFromTodo.as_view(),
+        name='remove-upvote',
+    ),
 ]
