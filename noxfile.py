@@ -40,8 +40,9 @@ def _pip_compile(session: nox.Session, path: str) -> None:
 def pip_compile(session: nox.Session) -> None:
     """Compile dependency files."""
     session.install('pip-tools')
-    _pip_compile(session, 'requirements/prod.in')
-    _pip_compile(session, 'requirements/test.in')
+    with session.chdir('requirements/'):
+        _pip_compile(session, 'prod.in')
+        _pip_compile(session, 'test.in')
 
 
 @nox.session(python='3.12')

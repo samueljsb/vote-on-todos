@@ -6,28 +6,28 @@
 #
 asgiref==3.7.2
     # via
-    #   -r requirements/prod.txt
+    #   -r prod.txt
     #   django
 attrs==23.1.0
     # via
-    #   -r requirements/prod.txt
+    #   -r prod.txt
     #   cattrs
 beautifulsoup4==4.12.2
     # via webtest
 cattrs==23.1.2
-    # via -r requirements/prod.txt
+    # via -r prod.txt
 covdefaults==2.3.0
-    # via -r requirements/test.in
+    # via -r test.in
 coverage==7.3.2
     # via
-    #   -r requirements/test.in
+    #   -r test.in
     #   covdefaults
 django==4.2.6
-    # via -r requirements/prod.txt
+    # via -r prod.txt
 django-webtest==1.9.11
-    # via -r requirements/test.in
+    # via -r test.in
 factory-boy==3.3.0
-    # via -r requirements/test.in
+    # via -r test.in
 faker==19.12.0
     # via factory-boy
 iniconfig==2.0.0
@@ -38,10 +38,10 @@ pluggy==1.3.0
     # via pytest
 pytest==7.4.2
     # via
-    #   -r requirements/test.in
+    #   -r test.in
     #   pytest-django
 pytest-django==4.5.2
-    # via -r requirements/test.in
+    # via -r test.in
 python-dateutil==2.8.2
     # via faker
 six==1.16.0
@@ -50,7 +50,7 @@ soupsieve==2.5
     # via beautifulsoup4
 sqlparse==0.4.4
     # via
-    #   -r requirements/prod.txt
+    #   -r prod.txt
     #   django
 waitress==2.1.2
     # via webtest
