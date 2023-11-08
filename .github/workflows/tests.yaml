@@ -17,7 +17,19 @@ jobs:
         cache: 'pip'
         cache-dependency-path: requirements/test.txt
     - run: pip install nox
-    - run: nox -s tests
+    - run: nox -s test
+
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - uses: actions/setup-python@v4
+      with:
+        python-version: ${{ env.PYTHON_VERSION }}
+        cache: 'pip'
+        cache-dependency-path: requirements/test.txt
+    - run: pip install nox
+    - run: nox -s lint
 
   pip_compile:
     runs-on: ubuntu-latest
@@ -27,7 +39,7 @@ jobs:
       with:
         python-version: ${{ env.PYTHON_VERSION }}
         cache: 'pip'
-        cache-dependency-path: requirements/dev.txt
+        cache-dependency-path: requirements/test.txt
     - run: pip install nox
     - run: nox -s pip_compile
     - run: git diff --exit-code
@@ -40,7 +52,7 @@ jobs:
       with:
         python-version: ${{ env.PYTHON_VERSION }}
         cache: 'pip'
-        cache-dependency-path: requirements/dev.txt
+        cache-dependency-path: requirements/test.txt
     - run: pip install nox
     - run: nox -s makemigrations
     - run: git diff --exit-code
