@@ -19,6 +19,18 @@ jobs:
     - run: pip install nox
     - run: nox -s test
 
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - uses: actions/setup-python@v4
+      with:
+        python-version: ${{ env.PYTHON_VERSION }}
+        cache: 'pip'
+        cache-dependency-path: requirements/test.txt
+    - run: pip install nox
+    - run: nox -s lint
+
   pip_compile:
     runs-on: ubuntu-latest
     steps:
