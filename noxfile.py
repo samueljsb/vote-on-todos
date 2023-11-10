@@ -46,6 +46,27 @@ def pip_compile(session: nox.Session) -> None:
 
 
 @nox.session(python='3.12')
+def pip_audit(session: nox.Session) -> None:
+    """Audit dependencies for known vulnerabilities.
+
+    Will fix those problems if it can.
+    """
+    session.install('pip-audit')
+    session.run(
+        'pip-audit', '--desc',
+        '-r', 'requirements/prod.txt',
+        '-r', 'requirements/test.txt',
+        '--fix',
+    )
+
+    # if there are changes, re-compile dependencies
+    try:
+        session.run('git', 'diff', '--quiet')
+    except nox.command.CommandFailed:
+        session.notify('pip_compile')
+
+
+@nox.session(python='3.12')
 def makemigrations(session: nox.Session) -> None:
     """Make Django migrations."""
     session.install('-r', 'requirements/prod.txt')
