@@ -22,7 +22,7 @@ BEGIN
     END;
 END;
 """,
-            reverse_sql='DROP TRIGGER ensure_event_index_always_increases;',
+            reverse_sql='DROP TRIGGER ensure_listevent_index_always_increases;',
         ),
         migrations.RunSQL(
             sql="""\
@@ -37,6 +37,6 @@ BEGIN
     END;
 END;
 """,
-            reverse_sql='DROP TRIGGER ensure_event_index_always_increases;',
+            reverse_sql='DROP TRIGGER ensure_todoevent_index_always_increases;',
         ),
     ]
