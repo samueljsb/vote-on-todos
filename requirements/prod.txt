@@ -14,5 +14,5 @@ cattrs==23.1.2
     # via -r prod.in
 django==4.2.11
     # via -r prod.in
-sqlparse==0.4.4
+sqlparse==0.5.0
     # via django
